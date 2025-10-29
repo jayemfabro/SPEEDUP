@@ -1,173 +1,146 @@
-import React, { useEffect } from 'react';
-import { Head, Link } from '@inertiajs/react';
-import Header from '@/Components/Header';
+import React, { useEffect } from "react";
+import { Link, usePage } from "@inertiajs/react";
+import Header from "@/Components/Header";
 import Footer from '@/Components/Footer';
-import { Calendar, Bell, Tag, ArrowLeft, Clock, ExternalLink } from 'lucide-react';
+import {
+    ArrowLeft,
+    Calendar,
+    Clock,
+    MapPin,
+    User,
+    Tag,
+    Share2,
+    Facebook,
+    Twitter,
+    Linkedin,
+    Phone,
+    Mail,
+    ArrowRight,
+} from "lucide-react";
 
 export default function Announcement({ announcement }) {
+    const { url } = usePage();
+
     // Scroll to top when component mounts
     useEffect(() => {
         window.scrollTo(0, 0);
     }, []);
 
     return (
-        <>
-            <Head title={`${announcement.title} - Speed Up Tutorial Center`} />
-            
-            <Header activeSection="announcements" />
+        <div className="min-h-screen bg-orange-50">
+            <Header />
 
             {/* Main Content */}
-            <main className="w-full bg-orange-50 min-h-screen py-12 px-4">
-                <div className="max-w-4xl mx-auto">
-                    {/* Back Button */}
-                    <div className="mb-8">
-                        <Link 
-                            href={route('announcements')}
-                            className="inline-flex items-center px-4 py-2 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 rounded-lg transition-colors shadow-sm"
-                        >
-                            <ArrowLeft className="h-4 w-4 mr-2" />
-                            Back to Announcements
-                        </Link>
-                    </div>
+            <main className="container mx-auto px-4 md:px-6 py-12 bg-transparent">
+                <div className="mb-6">
+                    <Link 
+                        href={route('announcements')} 
+                        className="inline-flex items-center text-orange-600 hover:text-orange-700 transition-colors"
+                    >
+                        <ArrowLeft className="h-4 w-4 mr-2" />
+                        Back to all announcements
+                    </Link>
+                </div>
+                <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 border-b-4 border-orange-500">
+                            {/* Featured Image */}
+                            <div className="relative h-72 md:h-[500px] overflow-hidden rounded-t-2xl">
+                                <img
+                                    src={announcement.image}
+                                    alt={announcement.title}
+                                    className="w-full h-full object-cover transition-transform duration-1000 hover:scale-105"
+                                />
 
-                    {/* Announcement Card */}
-                    <div className="bg-white rounded-2xl overflow-hidden shadow-xl border-b-4 border-orange-500">
-                        {/* Header with Badge and Date */}
-                        <div className="p-6 border-b border-gray-100">
-                            <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-                                <div className="flex items-center space-x-4">
-                                    <div className="inline-flex items-center px-4 py-2 bg-orange-500 text-white rounded-full text-sm font-medium shadow-lg">
-                                        <Bell className="h-4 w-4 mr-2" />
-                                        <span>{announcement.badge || 'Announcement'}</span>
+                                {/* Top-right badge (absolute) */}
+                                <div className="absolute top-4 right-4">
+                                    <div className="inline-block bg-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wide shadow-lg">
+                                        {announcement.badge ?? 'Active'}
                                     </div>
-                                    {announcement.tags && announcement.tags.length > 0 && (
-                                        <div className="flex flex-wrap gap-2">
-                                            {announcement.tags.map((tag, index) => (
-                                                <span 
-                                                    key={index}
-                                                    className="inline-flex items-center px-2 py-1 bg-navy-100 text-navy-800 rounded-full text-xs font-medium"
-                                                >
-                                                    <Tag className="h-3 w-3 mr-1" />
-                                                    #{tag.replace('-', '')}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    )}
                                 </div>
-                                <div className="flex items-center text-gray-600">
-                                    <Calendar className="h-5 w-5 mr-2" />
-                                    <span className="text-sm font-medium">{announcement.date}</span>
+
+                                {/* Expires overlay - bottom left */}
+                                {announcement.expires_at && (
+                                    <div className="absolute left-4 bottom-4 bg-black/60 rounded-md px-3 py-2 text-white text-sm flex items-center gap-2">
+                                        <span className="inline-flex items-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3M3 11h18M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
+                                        </span>
+                                        <span>Expires: {new Date(announcement.expires_at).toLocaleDateString()}</span>
+                                    </div>
+                                )}
+
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent flex items-end p-6 md:p-10">
+                                    <h1 className="text-2xl md:text-4xl font-bold text-white max-w-3xl leading-tight drop-shadow-lg">
+                                        {announcement.title}
+                                    </h1>
                                 </div>
                             </div>
 
-                            {/* Expiry Notice */}
-                            {announcement.expires_at && (
-                                <div className="flex items-center p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
-                                    <Clock className="h-5 w-5 text-yellow-600 mr-3" />
-                                    <div>
-                                        <p className="text-sm font-medium text-yellow-800">Limited Time Offer</p>
-                                        <p className="text-xs text-yellow-700">Expires on {announcement.expires_at}</p>
-                                    </div>
+                    {/* Content */}
+                    <div className="p-6 md:p-10">
+                        {/* Meta Info */}
+                        <div className="flex flex-wrap gap-4 mb-8 text-sm border-b border-gray-100 pb-6">
+                            <div className="flex items-center bg-gray-50 px-3 py-2 rounded-lg">
+                                <Calendar className="h-4 w-4 mr-2 text-orange-500" />
+                                <span className="font-medium">
+                                    {announcement.date}
+                                </span>
+                            </div>
+                            {announcement.location && (
+                                <div className="flex items-center bg-gray-50 px-3 py-2 rounded-lg">
+                                    <MapPin className="h-4 w-4 mr-2 text-orange-500" />
+                                    <span className="font-medium">
+                                        {announcement.location}
+                                    </span>
+                                </div>
+                            )}
+                            {announcement.author && (
+                                <div className="flex items-center bg-gray-50 px-3 py-2 rounded-lg">
+                                    <User className="h-4 w-4 mr-2 text-orange-500" />
+                                    <span className="font-medium">
+                                        By {announcement.author}
+                                    </span>
                                 </div>
                             )}
                         </div>
 
-                        {/* Hero Image */}
-                        {announcement.image && (
-                            <div className="relative h-96 overflow-hidden">
-                                <img 
-                                    src={announcement.image} 
-                                    alt={announcement.title}
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                        e.target.onerror = null;
-                                        e.target.src = 'https://placehold.co/800x400?text=No+Image';
-                                    }}
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"></div>
+                        {/* Tags */}
+                        {announcement.tags && announcement.tags.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mb-6">
+                                {announcement.tags.map((tag, index) => (
+                                    <div
+                                        key={index}
+                                        className="flex items-center px-3 py-1.5 bg-orange-100 text-orange-700 rounded-full text-xs font-medium hover:bg-orange-200 transition-colors cursor-pointer"
+                                    >
+                                        <Tag className="h-3 w-3 mr-1.5" />
+                                        {tag}
+                                    </div>
+                                ))}
                             </div>
                         )}
 
+                        {/* Title (compact) */}
+                        <h2 className="text-2xl md:text-3xl font-semibold text-gray-900 mb-4">
+                            {announcement.title}
+                        </h2>
+
                         {/* Content */}
-                        <div className="p-8">
-                            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                                {announcement.title}
-                            </h1>
-
-                            {/* Content Body */}
-                            <div className="prose prose-lg prose-orange max-w-none">
-                                {announcement.content && announcement.content.length > 0 ? (
-                                    announcement.content.map((paragraph, index) => (
-                                        <p key={index} className="text-gray-700 leading-relaxed mb-4">
-                                            {paragraph}
-                                        </p>
-                                    ))
-                                ) : (
-                                    <p className="text-gray-700 leading-relaxed">
-                                        Stay tuned for more details about this announcement.
-                                    </p>
-                                )}
-                            </div>
-
-                            {/* Action Buttons */}
-                            <div className="mt-10 pt-6 border-t border-gray-100">
-                                <div className="flex flex-col sm:flex-row gap-4">
-                                    <a 
-                                        href={`mailto:contact@speeduptutorial.com?subject=Inquiry about: ${announcement.title}`}
-                                        className="inline-flex items-center justify-center px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg transition-colors shadow-lg"
-                                    >
-                                        Contact Us About This
-                                        <ExternalLink className="ml-2 h-4 w-4" />
-                                    </a>
-                                    <Link 
-                                        href={route('inquiry')}
-                                        className="inline-flex items-center justify-center px-6 py-3 bg-navy-600 hover:bg-navy-700 text-white font-medium rounded-lg transition-colors shadow-lg"
-                                    >
-                                        Make an Inquiry
-                                    </Link>
-                                    <Link 
-                                        href={route('announcements')}
-                                        className="inline-flex items-center justify-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-lg transition-colors shadow-lg"
-                                    >
-                                        View All Announcements
-                                    </Link>
-                                </div>
-                            </div>
+                        <div className="prose prose-orange prose-lg max-w-none mb-10">
+                            {announcement.content.map((paragraph, index) => (
+                                <p
+                                    key={index}
+                                    className="mb-6 text-gray-700 leading-relaxed"
+                                >
+                                    {paragraph}
+                                </p>
+                            ))}
                         </div>
-                    </div>
 
-                    {/* Related Information */}
-                    <div className="mt-8 bg-white rounded-xl p-6 shadow-lg">
-                        <h3 className="text-xl font-semibold text-gray-900 mb-4">Need More Information?</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="flex items-start space-x-4">
-                                <div className="flex-shrink-0 w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                                    <Bell className="h-5 w-5 text-orange-600" />
-                                </div>
-                                <div>
-                                    <h4 className="font-medium text-gray-900">Stay Updated</h4>
-                                    <p className="text-sm text-gray-600 mt-1">
-                                        Follow our announcements page for the latest updates and offers.
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex items-start space-x-4">
-                                <div className="flex-shrink-0 w-10 h-10 bg-navy-100 rounded-full flex items-center justify-center">
-                                    <ExternalLink className="h-5 w-5 text-navy-600" />
-                                </div>
-                                <div>
-                                    <h4 className="font-medium text-gray-900">Contact Support</h4>
-                                    <p className="text-sm text-gray-600 mt-1">
-                                        Have questions? Reach out to us for personalized assistance.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+                        
                     </div>
                 </div>
             </main>
-
             <Footer />
-        </>
+        </div>
     );
 }

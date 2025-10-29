@@ -37,7 +37,7 @@ export default function Announcements() {
         <>
             <Head title="Announcements - Speed Up Tutorial Center" />
             
-            <Header activeSection="announcements" />
+            <Header activeSection="announcement" />
 
             {/* Main Content */}
             <main className="w-full bg-orange-50 min-h-screen py-12 px-4">

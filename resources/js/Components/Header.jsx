@@ -20,6 +20,17 @@ const Header = ({ activeSection = '' }) => {
         };
     }, []);
 
+    const handleSectionClick = (e, sectionId) => {
+        e.preventDefault();
+        const element = document.getElementById(sectionId);
+        if (element) {
+            element.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    };
+
     return (
         <div className="fixed top-0 left-0 right-0 z-50 flex justify-center px-4 pt-6">
             <header 
@@ -47,50 +58,50 @@ const Header = ({ activeSection = '' }) => {
                     </div>
 
                     <nav className="flex items-center space-x-6 mx-auto md:mx-0 md:space-x-8">
-                        <Link
-                            href="/#home"
-                            className={`group relative text-sm font-medium transition-colors 
-                                      ${activeSection === 'home' 
-                                        ? 'text-orange-400' 
-                                        : 'text-white hover:text-orange-300'}`}
-                        >
-                            Home
-                            <span className={`absolute -bottom-1 left-0 h-0.5 bg-orange-500 transition-all duration-300 
-                                           ${activeSection === 'home' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
-                        </Link>
-                        <Link
-                            href="/#about"
-                            className={`group relative text-sm font-medium transition-colors 
-                                      ${activeSection === 'about' 
-                                        ? 'text-orange-400' 
-                                        : 'text-white hover:text-orange-300'}`}
-                        >
-                            About Us
-                            <span className={`absolute -bottom-1 left-0 h-0.5 bg-orange-500 transition-all duration-300 
-                                           ${activeSection === 'about' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
-                        </Link>
-                        <Link
-                            href="/#why-choose-us"
-                            className={`group relative text-sm font-medium transition-colors 
-                                      ${activeSection === 'why-choose-us' 
-                                        ? 'text-orange-400' 
-                                        : 'text-white hover:text-orange-300'}`}
-                        >
-                            Why Choose Us
-                            <span className={`absolute -bottom-1 left-0 h-0.5 bg-orange-500 transition-all duration-300 
-                                           ${activeSection === 'why-choose-us' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
-                        </Link>
-                        <Link
-                            href={route('announcements')}
-                            className={`group relative text-sm font-medium transition-colors 
-                                      ${activeSection === 'announcements' 
-                                        ? 'text-orange-400' 
-                                        : 'text-white hover:text-orange-300'}`}
-                        >
-                            Announcements
-                            <span className={`absolute -bottom-1 left-0 h-0.5 bg-orange-500 transition-all duration-300 
-                                           ${activeSection === 'announcements' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
-                        </Link>
+                                                <Link
+                                                        href="/#home"
+                                                        className={`group relative text-sm font-medium transition-colors 
+                                                                            ${activeSection === 'home' 
+                                                                                ? 'text-orange-400' 
+                                                                                : 'text-white hover:text-orange-300'}`}
+                                                >
+                                                        Home
+                                                        <span className={`absolute -bottom-1 left-0 h-0.5 bg-orange-500 transition-all duration-300 
+                                                                                     ${activeSection === 'home' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+                                                </Link>
+                                                <Link
+                                                        href="/#about"
+                                                        className={`group relative text-sm font-medium transition-colors 
+                                                                            ${activeSection === 'about' 
+                                                                                ? 'text-orange-400' 
+                                                                                : 'text-white hover:text-orange-300'}`}
+                                                >
+                                                        About Us
+                                                        <span className={`absolute -bottom-1 left-0 h-0.5 bg-orange-500 transition-all duration-300 
+                                                                                     ${activeSection === 'about' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+                                                </Link>
+                                                <Link
+                                                        href="/#why-choose-us"
+                                                        className={`group relative text-sm font-medium transition-colors 
+                                                                            ${activeSection === 'why-choose-us' 
+                                                                                ? 'text-orange-400' 
+                                                                                : 'text-white hover:text-orange-300'}`}
+                                                >
+                                                        Why Choose Us
+                                                        <span className={`absolute -bottom-1 left-0 h-0.5 bg-orange-500 transition-all duration-300 
+                                                                                     ${activeSection === 'why-choose-us' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+                                                </Link>
+                                                <Link
+                                                        href="/#announcements"
+                                                        className={`group relative text-sm font-medium transition-colors 
+                                                                            ${activeSection === 'announcements' 
+                                                                                ? 'text-orange-400' 
+                                                                                : 'text-white hover:text-orange-300'}`}
+                                                >
+                                                        Announcements
+                                                        <span className={`absolute -bottom-1 left-0 h-0.5 bg-orange-500 transition-all duration-300 
+                                                                                     ${activeSection === 'announcements' ? 'w-full' : 'w-0 group-hover:w-full'}`}></span>
+                                                </Link>
                     </nav>
                 </div>
             </header>

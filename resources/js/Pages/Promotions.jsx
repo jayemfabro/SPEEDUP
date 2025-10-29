@@ -40,7 +40,7 @@ export default function Announcements() {
             <Header activeSection="announcements" />
 
             {/* Main Content */}
-            <main className="w-full bg-orange-50 min-h-screen py-12 px-4">
+            <main className="w-full bg-orange-50 min-h-screen pt-24 pb-12 px-4">
                 <div className="max-w-7xl mx-auto">
                     {/* Page Header */}
                     <div className="text-center mb-12">
