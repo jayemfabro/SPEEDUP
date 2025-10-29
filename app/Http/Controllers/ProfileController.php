@@ -58,9 +58,35 @@ class ProfileController extends Controller
             }
         }
         
-        // Fill other validated fields
+        // Parse the name into individual components
+        $fullName = trim($validated['name']);
+        $nameParts = explode(' ', $fullName);
+        $nameParts = array_filter($nameParts); // Remove empty parts
+        
+        $firstName = '';
+        $middleName = '';
+        $lastName = '';
+        
+        if (count($nameParts) === 1) {
+            // Only first name provided
+            $firstName = $nameParts[0];
+        } elseif (count($nameParts) === 2) {
+            // First and last name
+            $firstName = $nameParts[0];
+            $lastName = $nameParts[1];
+        } elseif (count($nameParts) >= 3) {
+            // First, middle(s), and last name
+            $firstName = array_shift($nameParts); // Remove and get first element
+            $lastName = array_pop($nameParts);    // Remove and get last element
+            $middleName = implode(' ', $nameParts); // Everything in between
+        }
+        
+        // Fill all fields including parsed name components
         $user->fill([
             'name' => $validated['name'],
+            'first_name' => $firstName,
+            'middle_name' => $middleName ?: null,
+            'last_name' => $lastName ?: null,
             'email' => $validated['email'],
             'birthdate' => $validated['birthdate'] ?? null,
         ]);
@@ -70,6 +96,15 @@ class ProfileController extends Controller
         }
 
         $user->save();
+        
+        \Log::info('Profile updated with parsed name', [
+            'user_id' => $user->id,
+            'original_name' => $validated['name'],
+            'parsed_first_name' => $firstName,
+            'parsed_middle_name' => $middleName,
+            'parsed_last_name' => $lastName,
+            'constructed_name' => trim($firstName . ' ' . $middleName . ' ' . $lastName)
+        ]);
 
         return Redirect::route('profile.edit')->with('message', 'Profile updated successfully.');
     }

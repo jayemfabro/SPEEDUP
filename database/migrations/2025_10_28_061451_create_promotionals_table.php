@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('promotionals', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->text('description');
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->datetime('expires_at')->nullable();
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

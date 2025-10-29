@@ -22,10 +22,34 @@ class AdminTeachersController extends Controller
             Log::info('Fetching teachers from database');
             
             $teachers = User::teachers()
-                ->select('id', 'first_name', 'middle_name', 'last_name', 'username', 'email', 'phone', 'birthdate', 'image', 'status', 'created_at')
+                ->select('id', 'name', 'first_name', 'middle_name', 'last_name', 'username', 'email', 'phone', 'birthdate', 'image', 'status', 'created_at')
                 ->get()
                 ->map(function ($teacher) {
-                    $name = trim(($teacher->first_name ?? '') . ' ' . ($teacher->middle_name ?? '') . ' ' . ($teacher->last_name ?? ''));
+                    // Construct name from individual fields if they exist, otherwise use name field
+                    $nameParts = array_filter([
+                        $teacher->first_name ?? '',
+                        $teacher->middle_name ?? '',
+                        $teacher->last_name ?? ''
+                    ]);
+                    
+                    if (!empty($nameParts)) {
+                        $name = implode(' ', $nameParts);
+                    } else {
+                        $name = $teacher->name ?? 'Unknown';
+                    }
+                    
+                    // Clean up any extra spaces
+                    $name = trim(preg_replace('/\s+/', ' ', $name));
+                    
+                    // Debug logging for teacher name construction
+                    \Log::debug('Teacher name construction', [
+                        'teacher_id' => $teacher->id,
+                        'raw_name_field' => $teacher->name,
+                        'first_name' => $teacher->first_name,
+                        'middle_name' => $teacher->middle_name,
+                        'last_name' => $teacher->last_name,
+                        'constructed_name' => $name
+                    ]);
                     
                     // Fetch class stats for this teacher
                     $classStats = \App\Models\Admin\ClassModel::where('teacher_id', $teacher->id)
