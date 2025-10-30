@@ -35,12 +35,12 @@ export default function AdminClasses() {
     // Helper function to convert date format to yyyy-MM-dd
     const formatDateForInput = (dateString) => {
         if (!dateString) return '';
-        
+
         // If it's already in yyyy-MM-dd format, return as is
         if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
             return dateString;
         }
-        
+
         // If it's in MM/dd/yyyy format, convert it
         if (dateString.includes('/')) {
             const parts = dateString.split('/');
@@ -49,7 +49,7 @@ export default function AdminClasses() {
                 return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
             }
         }
-        
+
         return '';
     };
 
@@ -69,7 +69,7 @@ export default function AdminClasses() {
     const [classes, setClasses] = useState([]);
     const [teachers, setTeachers] = useState({});
     const [loading, setLoading] = useState(true);
-    
+
 
 
     const [searchQuery, setSearchQuery] = useState("");
@@ -106,22 +106,22 @@ export default function AdminClasses() {
         const cleanStatuses = [
             "Valid for Cancellation",
             "Free Class",
-            "FC not consumed", 
+            "FC not consumed",
             "Completed",
             "Absent w/ntc counted",
             "Cancelled",
-            "Absent w/ntc-not counted", 
+            "Absent w/ntc-not counted",
             "FC consumed"
         ];
-        
+
         if (cleanStatuses.includes(status)) {
             return status;
         }
-        
+
         // Map from database format to clean display format
         const statusMap = {
             "FC not consumed (RG)": "FC not consumed",
-            "FC consumed (RG)": "FC consumed", 
+            "FC consumed (RG)": "FC consumed",
             "Completed (RG)": "Completed",
             "Completed (PRM)": "Completed",
             "Absent w/ntc counted (RG)": "Absent w/ntc counted",
@@ -134,14 +134,14 @@ export default function AdminClasses() {
     // Helper function to convert 24-hour time to 12-hour format
     const formatTimeTo12Hour = (time24) => {
         if (!time24) return time24;
-        
+
         try {
             // Create a date object with the time
             const [hours, minutes] = time24.split(':');
             const date = new Date();
             date.setHours(parseInt(hours, 10));
             date.setMinutes(parseInt(minutes, 10));
-            
+
             // Format to 12-hour time
             return date.toLocaleTimeString('en-US', {
                 hour: 'numeric',
@@ -237,45 +237,45 @@ export default function AdminClasses() {
     const handleExportAsPDF = () => {
         try {
             setProcessingExport(true);
-            
+
             const { type: exportType, studentId } = exportConfig;
-            
+
             // Filter classes based on export type
             let classesToExport = [...filteredClasses];
-            
+
             // Apply additional filters based on export type
             if (exportType === 'student' && studentId) {
-                classesToExport = classesToExport.filter(cls => 
+                classesToExport = classesToExport.filter(cls =>
                     cls.student_id === studentId || cls.student_name === studentId
                 );
             }
-            
+
             // Sort classes by date and time
             classesToExport.sort((a, b) => {
                 // First sort by date
                 const dateA = new Date(a.schedule || 0);
                 const dateB = new Date(b.schedule || 0);
-                
+
                 if (dateA - dateB !== 0) {
                     return dateA - dateB;
                 }
-                
+
                 // If same date, sort by time
                 return a.time?.localeCompare(b.time || '');
             });
-            
+
             // Get current date info for the title
             const now = new Date();
             const year = now.getFullYear();
             const month = now.getMonth();
-            
+
             // Month names for display
             const monthNames = ["January", "February", "March", "April", "May", "June",
-                               "July", "August", "September", "October", "November", "December"];
-            
+                "July", "August", "September", "October", "November", "December"];
+
             // Create a container for PDF generation
             const element = document.createElement('div');
-            
+
             // Set the HTML content for the PDF
             element.innerHTML = `
                                                                                                 <div style="font-family: 'Inter', Arial, sans-serif; background: #fff; color: #222; min-height: 100vh; display: flex; flex-direction: column; justify-content: flex-start;">
@@ -292,10 +292,7 @@ export default function AdminClasses() {
                                                                                                             <div style="text-align: right; color: #FFD600; font-size: 1.5rem; font-weight: 700; letter-spacing: 1px; margin-top: 4px;">SCHEDULE</div>
                                                                                                         </div>
                                                                                                         <div style="background: #FFD600; color: #222; font-size: 1rem; font-weight: 500; padding: 10px 32px; display: flex; align-items: center; border-radius: 0 0 18px 18px;">
-                                                                                                            <span style="display: flex; align-items: center;">
-                                                                                                                <svg style="height: 18px; width: 18px; margin-right: 8px;" fill="none" stroke="#11235A" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#11235A" stroke-width="2" fill="#FFD600"/><circle cx="12" cy="12" r="3" fill="#11235A"/></svg>
-                                                                                                                123 Anywhere St., Any City, ST 12345
-                                                                                                            </span>
+                                                                                                            
                                                                                                         </div>
                                                                                                     </div>
                                                                                                     <!-- Table (main content) -->
@@ -333,18 +330,11 @@ export default function AdminClasses() {
                                                                                                     <!-- Footer (fixed at bottom) -->
                                                                                                     <div style="flex-shrink: 0; width: 100%;">
                                                                                                         <div style="background: #FFD600; color: #222; font-size: 1rem; font-weight: 500; padding: 10px 32px; display: flex; align-items: center; border-radius: 0 0 18px 18px; margin: 0 auto; max-width: 900px; justify-content: space-between;">
-                                                                                                            <span style="display: flex; align-items: center;">
-                                                                                                                <svg style="height: 18px; width: 18px; margin-right: 8px;" fill="none" stroke="#11235A" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="#11235A" stroke-width="2" fill="#FFD600"/><circle cx="12" cy="12" r="3" fill="#11235A"/></svg>
-                                                                                                                +123-456-7890
+                                                                                                            <span style="display: inline-flex; align-items: center; gap: 8px; line-height: 1; color: #11235A;">
+                                                                                                                <svg xmlns="http://www.w3.org/2000/svg" style="display: block; height: 18px; width: 18px;" viewBox="0 0 24 24" fill="none" stroke="#11235A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><polyline points="22 6 12 13 2 6"></polyline></svg>
+                                                                                                                speedupenglishonlinetutors@gmail.com
                                                                                                             </span>
-                                                                                                            <span style="display: flex; align-items: center;">
-                                                                                                                <svg style="height: 18px; width: 18px; margin-right: 8px;" fill="none" stroke="#11235A" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" fill="#FFD600" stroke="#11235A" stroke-width="2"/><path d="M8 12h8M8 16h8M8 8h8" stroke="#11235A" stroke-width="2"/></svg>
-                                                                                                                www.reallygreatsite.com
-                                                                                                            </span>
-                                                                                                            <span style="display: flex; align-items: center;">
-                                                                                                                <svg style="height: 18px; width: 18px; margin-right: 8px;" fill="none" stroke="#11235A" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12c0 5.52 4.48 10 10 10s10-4.48 10-10c0-5.52-4.48-10-10-10zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" fill="#FFD600" stroke="#11235A" stroke-width="2"/></svg>
-                                                                                                                123 Anywhere St., Any City, ST 12345
-                                                                                                            </span>
+                                                                                                            
                                                                                                         </div>
                                                                                                         <div style="text-align: center; font-size: 12px; color: #6c757d; margin-top: 8px; margin-bottom: 8px;">
                                                                                                             Generated on ${new Date().toLocaleString()} | Total: ${classesToExport.length} classes
@@ -353,7 +343,7 @@ export default function AdminClasses() {
                                                                                                 </div>
                 </div>
             `;
-            
+
             // Configure PDF options
             const opt = {
                 margin: [10, 10, 10, 10],
@@ -362,7 +352,7 @@ export default function AdminClasses() {
                 html2canvas: { scale: 2, useCORS: true },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
-            
+
             // Generate and download PDF using html2pdf
             setTimeout(() => {
                 html2pdf().from(element).set(opt).save()
@@ -372,7 +362,7 @@ export default function AdminClasses() {
                         setShowExportModal(false);
                     });
             }, 1000);
-            
+
         } catch (error) {
             console.error("Failed to generate PDF:", error);
             toast.error("An error occurred while generating the PDF.");
@@ -460,13 +450,13 @@ export default function AdminClasses() {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [datePickerRef]);
-    
+
     // Fetch classes data when component mounts
     useEffect(() => {
         fetchClasses();
         fetchTeachers();
     }, []);
-    
+
     // Fetch classes data from API
     const fetchClasses = async () => {
         try {
@@ -479,7 +469,7 @@ export default function AdminClasses() {
             setLoading(false);
         }
     };
-    
+
     // Fetch teachers data from API
     const fetchTeachers = async () => {
         try {
@@ -488,7 +478,7 @@ export default function AdminClasses() {
             // Convert array to object with teacher ID as key
             const teachersObj = {};
             response.data.forEach(teacher => {
-                teachersObj[teacher.id] = { 
+                teachersObj[teacher.id] = {
                     name: teacher.name,
                     image: teacher.image || teacher.avatar || null,
                     email: teacher.email || null
@@ -563,10 +553,10 @@ export default function AdminClasses() {
                     <div>
                         <div className="font-semibold text-red-800 mb-2">⚠️ TIME SLOT UNAVAILABLE</div>
                         <div className="text-sm text-red-700 mb-3">
-                            <strong>Conflicting class:</strong><br/>
-                            • Student: {conflictData.conflicting_class.student_name}<br/>
-                            • Class Type: {conflictData.conflicting_class.class_type}<br/>
-                            • Time: {conflictData.conflicting_class.time}<br/>
+                            <strong>Conflicting class:</strong><br />
+                            • Student: {conflictData.conflicting_class.student_name}<br />
+                            • Class Type: {conflictData.conflicting_class.class_type}<br />
+                            • Time: {conflictData.conflicting_class.time}<br />
                             • Date: {new Date(conflictData.conflicting_class.schedule).toLocaleDateString()}
                         </div>
                         <div className="text-xs text-red-600">
@@ -646,13 +636,13 @@ export default function AdminClasses() {
         const cleanStatus = getCleanStatusName(status);
         // Then get the exact legend colors
         const legendColor = getLegendStatusColor(cleanStatus);
-        
+
         // Determine text color based on background color for better contrast
         let textColor = 'text-white';
         if (cleanStatus === 'FC not consumed' || cleanStatus === 'Free Class') {
             textColor = 'text-black'; // Yellow background needs dark text
         }
-        
+
         return `${legendColor.bg} ${textColor} border ${legendColor.border} px-3 py-1 rounded-md text-xs font-medium inline-block min-w-[180px] text-center`;
     };
 
@@ -692,568 +682,562 @@ export default function AdminClasses() {
             <Head title="Manage Classes" />
             <div>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                {/* Responsive Banner */}
-                <div className="relative rounded-xl overflow-hidden bg-gradient-to-r from-navy-800 to-navy-700 p-4 sm:p-6 md:p-8 mb-6 shadow-lg">
-                    <div className="relative z-10">
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                            <div className="flex-1 min-w-0">
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                                    <div className="text-center sm:text-left">
-                                        <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
-                                            Classes Management
-                                        </h1>
-                                        <p className="mt-1 sm:mt-2 text-sm sm:text-base text-navy-100">
-                                            Manage your classes and their
-                                            information
-                                        </p>
+                    {/* Responsive Banner */}
+                    <div className="relative rounded-xl overflow-hidden bg-gradient-to-r from-navy-800 to-navy-700 p-4 sm:p-6 md:p-8 mb-6 shadow-lg">
+                        <div className="relative z-10">
+                            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                                        <div className="text-center sm:text-left">
+                                            <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
+                                                Classes Management
+                                            </h1>
+                                            <p className="mt-1 sm:mt-2 text-sm sm:text-base text-navy-100">
+                                                Manage your classes and their
+                                                information
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
+                                {/* Add action buttons or additional content here if needed */}
                             </div>
-                            {/* Add action buttons or additional content here if needed */}
                         </div>
                     </div>
-                </div>
 
-                {/* Search and Filter Container */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 relative z-10">
-                    <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
-                        <div className="flex flex-col sm:flex-row gap-4 w-full overflow-visible">
-                            {/* Search Input */}
-                            <div className="relative w-full sm:w-64">
-                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-navy-400">
-                                    <Search className="h-4 w-4" />
+                    {/* Search and Filter Container */}
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 relative z-10">
+                        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                            <div className="flex flex-col sm:flex-row gap-4 w-full overflow-visible">
+                                {/* Search Input */}
+                                <div className="relative w-full sm:w-64">
+                                    <div className="absolute left-3 top-1/2 -translate-y-1/2 text-navy-400">
+                                        <Search className="h-4 w-4" />
+                                    </div>
+                                    <input
+                                        type="text"
+                                        className="block w-full pl-10 pr-3 h-[42px] border border-gray-200 rounded-lg leading-5 bg-white placeholder-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-navy-500 text-sm"
+                                        placeholder="Search by student name or class..."
+                                        value={searchTerm}
+                                        onChange={(e) =>
+                                            setSearchTerm(e.target.value)
+                                        }
+                                    />
                                 </div>
-                                <input
-                                    type="text"
-                                    className="block w-full pl-10 pr-3 h-[42px] border border-gray-200 rounded-lg leading-5 bg-white placeholder-navy-400 focus:outline-none focus:ring-2 focus:ring-navy-500 focus:border-navy-500 text-sm"
-                                    placeholder="Search by student name or class..."
-                                    value={searchTerm}
-                                    onChange={(e) =>
-                                        setSearchTerm(e.target.value)
-                                    }
-                                />
-                            </div>
 
-                            {/* Teacher Filter Dropdown */}
-                            <div className="relative w-full sm:w-56 z-[9999]">
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        setFilterOpen(
-                                            filterOpen === "teacher"
-                                                ? null
-                                                : "teacher"
-                                        )
-                                    }
-                                    onBlur={() =>
-                                        setTimeout(
-                                            () => setFilterOpen(null),
-                                            200
-                                        )
-                                    }
-                                    aria-haspopup="listbox"
-                                    aria-expanded={filterOpen === "teacher"}
-                                    className={`w-full text-left px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-between h-[42px] ${
-                                        filterOpen === "teacher"
-                                            ? "bg-orange-50 border border-orange-200 text-navy-700"
-                                            : "bg-white border border-gray-300 text-navy-700 hover:bg-gray-50 shadow-sm"
-                                    }`}
-                                >
-                                    <div className="flex items-center">
-                                        {filterTeacher &&
-                                        filterTeacher !== "all" ? (
-                                            <span className="truncate">
-                                                {teachers[filterTeacher]
-                                                    ?.name || "Teacher"}
-                                            </span>
-                                        ) : (
-                                            <span className="text-gray-500">
-                                                All Teachers
-                                            </span>
-                                        )}
-                                    </div>
-                                    {filterOpen === "teacher" ? (
-                                        <ChevronUp className="h-4 w-4" />
-                                    ) : (
-                                        <ChevronDown className="h-4 w-4" />
-                                    )}
-                                </button>
-
-                                {filterOpen === "teacher" && (
-                                    <div 
-                                        className="absolute z-[99999] mt-1 w-full min-w-[16rem] rounded-lg border border-gray-200 bg-white shadow-xl" 
-                                        style={{
-                                            position: 'absolute', 
-                                            zIndex: 99999,
-                                            top: '100%',
-                                            left: 0,
-                                            right: 0,
-                                            backgroundColor: 'white',
-                                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
-                                        }}
+                                {/* Teacher Filter Dropdown */}
+                                <div className="relative w-full sm:w-56 z-[9999]">
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setFilterOpen(
+                                                filterOpen === "teacher"
+                                                    ? null
+                                                    : "teacher"
+                                            )
+                                        }
+                                        onBlur={() =>
+                                            setTimeout(
+                                                () => setFilterOpen(null),
+                                                200
+                                            )
+                                        }
+                                        aria-haspopup="listbox"
+                                        aria-expanded={filterOpen === "teacher"}
+                                        className={`w-full text-left px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-between h-[42px] ${filterOpen === "teacher"
+                                                ? "bg-orange-50 border border-orange-200 text-navy-700"
+                                                : "bg-white border border-gray-300 text-navy-700 hover:bg-gray-50 shadow-sm"
+                                            }`}
                                     >
-                                        <div className="max-h-60 overflow-y-auto">
-                                            <div className="p-2 space-y-1">
-                                                <button
-                                                    key="all-teachers"
-                                                    type="button"
-                                                    className={`w-full rounded-md px-3 py-2 text-left text-sm transition-all duration-200 flex items-center ${
-                                                        !filterTeacher ||
-                                                        filterTeacher === "all"
-                                                            ? "bg-navy-600 text-white"
-                                                            : "text-gray-700 hover:bg-gray-100"
-                                                    }`}
-                                                    onClick={() => {
-                                                        setFilterTeacher("all");
-                                                        setFilterOpen(false);
-                                                    }}
-                                                >
-                                                    <Users className="h-4 w-4 mr-2" />
+                                        <div className="flex items-center">
+                                            {filterTeacher &&
+                                                filterTeacher !== "all" ? (
+                                                <span className="truncate">
+                                                    {teachers[filterTeacher]
+                                                        ?.name || "Teacher"}
+                                                </span>
+                                            ) : (
+                                                <span className="text-gray-500">
                                                     All Teachers
-                                                </button>
-                                                {Object.entries(teachers).map(
-                                                    ([id, teacher]) => (
-                                                        <button
-                                                            key={id}
-                                                            type="button"
-                                                            className={`w-full rounded-md px-3 py-2 text-left text-sm transition-all duration-200 flex items-center ${
-                                                                filterTeacher ===
-                                                                id
-                                                                    ? "bg-navy-600 text-white"
-                                                                    : "hover:bg-gray-100 text-gray-700"
-                                                            }`}
-                                                            onClick={() => {
-                                                                setFilterTeacher(
-                                                                    id
-                                                                );
-                                                                setFilterOpen(
-                                                                    false
-                                                                );
-                                                            }}
-                                                        >
-                                                            <User className="h-4 w-4 mr-2 text-navy-600" />
-                                                            {teacher.name}
-                                                        </button>
-                                                    )
-                                                )}
-                                            </div>
+                                                </span>
+                                            )}
                                         </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Status Filter Dropdown */}
-                            <div className="relative w-full sm:w-64 z-[90]">
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        setFilterOpen(
-                                            filterOpen === "status"
-                                                ? null
-                                                : "status"
-                                        )
-                                    }
-                                    onBlur={() =>
-                                        setTimeout(
-                                            () => setFilterOpen(null),
-                                            200
-                                        )
-                                    }
-                                    aria-haspopup="listbox"
-                                    aria-expanded={filterOpen === "status"}
-                                    className={`w-full text-left px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-between h-[42px] ${
-                                        filterOpen === "status"
-                                            ? "bg-orange-50 border border-orange-200 text-navy-700"
-                                            : "bg-white border border-gray-300 text-navy-700 hover:bg-gray-50 shadow-sm"
-                                    }`}
-                                >
-                                    <div className="flex items-center">
-                                        {filterStatus &&
-                                        filterStatus !== "all" ? (
-                                            <span className="truncate">
-                                                {getCleanStatusName(filterStatus)}
-                                            </span>
+                                        {filterOpen === "teacher" ? (
+                                            <ChevronUp className="h-4 w-4" />
                                         ) : (
-                                            <span className="text-gray-500">
-                                                All Statuses
-                                            </span>
+                                            <ChevronDown className="h-4 w-4" />
                                         )}
-                                    </div>
-                                    {filterOpen === "status" ? (
-                                        <ChevronUp className="h-4 w-4" />
-                                    ) : (
-                                        <ChevronDown className="h-4 w-4" />
-                                    )}
-                                </button>
+                                    </button>
 
-                                {filterOpen === "status" && (
-                                    <div className="absolute z-[100] mt-1 w-full min-w-[16rem] rounded-lg border border-gray-200 bg-white shadow-lg overflow-visible">
-                                        <div className="max-h-60 overflow-y-auto">
-                                            <div className="p-2 space-y-1">
-                                                <button
-                                                    key="all-statuses"
-                                                    type="button"
-                                                    className={`w-full rounded-md px-3 py-2 text-left text-sm transition-all duration-200 flex items-center ${
-                                                        !filterStatus ||
-                                                        filterStatus === "all"
-                                                            ? "bg-navy-600 text-white"
-                                                            : "text-gray-700 hover:bg-gray-100"
-                                                    }`}
-                                                    onClick={() => {
-                                                        setFilterStatus("all");
-                                                        setFilterOpen(false);
-                                                    }}
-                                                >
-                                                    <ListFilter className="h-4 w-4 mr-2" />
-                                                    All Statuses
-                                                </button>
-                                                {[
-                                                    "Valid for Cancellation",
-                                                    "FC not consumed",
-                                                    "Completed",
-                                                    "Absent w/ntc counted",
-                                                    "Cancelled",
-                                                    "Absent w/ntc-not counted",
-                                                    "FC consumed",
-                                                ].map((status) => {
-                                                    const legendColor = getLegendStatusColor(status);
-                                                    return (
-                                                        <button
-                                                            key={status}
-                                                            type="button"
-                                                            className={`w-full rounded-md px-3 py-2 text-left text-sm transition-all duration-200 flex items-center ${
-                                                                filterStatus ===
-                                                                status
-                                                                    ? "bg-navy-600 text-white"
-                                                                    : "hover:bg-gray-100 text-gray-700"
+                                    {filterOpen === "teacher" && (
+                                        <div
+                                            className="absolute z-[99999] mt-1 w-full min-w-[16rem] rounded-lg border border-gray-200 bg-white shadow-xl"
+                                            style={{
+                                                position: 'absolute',
+                                                zIndex: 99999,
+                                                top: '100%',
+                                                left: 0,
+                                                right: 0,
+                                                backgroundColor: 'white',
+                                                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                                            }}
+                                        >
+                                            <div className="max-h-60 overflow-y-auto">
+                                                <div className="p-2 space-y-1">
+                                                    <button
+                                                        key="all-teachers"
+                                                        type="button"
+                                                        className={`w-full rounded-md px-3 py-2 text-left text-sm transition-all duration-200 flex items-center ${!filterTeacher ||
+                                                                filterTeacher === "all"
+                                                                ? "bg-navy-600 text-white"
+                                                                : "text-gray-700 hover:bg-gray-100"
                                                             }`}
-                                                            onClick={() => {
-                                                                setFilterStatus(
-                                                                    status
-                                                                );
-                                                                setFilterOpen(
-                                                                    false
-                                                                );
-                                                            }}
-                                                        >
-                                                            <span className={`w-4 h-4 ${legendColor.bg} ${legendColor.border} border rounded-sm mr-3 flex-shrink-0`}></span>
-                                                            {status}
-                                                        </button>
-                                                    );
-                                                })}
+                                                        onClick={() => {
+                                                            setFilterTeacher("all");
+                                                            setFilterOpen(false);
+                                                        }}
+                                                    >
+                                                        <Users className="h-4 w-4 mr-2" />
+                                                        All Teachers
+                                                    </button>
+                                                    {Object.entries(teachers).map(
+                                                        ([id, teacher]) => (
+                                                            <button
+                                                                key={id}
+                                                                type="button"
+                                                                className={`w-full rounded-md px-3 py-2 text-left text-sm transition-all duration-200 flex items-center ${filterTeacher ===
+                                                                        id
+                                                                        ? "bg-navy-600 text-white"
+                                                                        : "hover:bg-gray-100 text-gray-700"
+                                                                    }`}
+                                                                onClick={() => {
+                                                                    setFilterTeacher(
+                                                                        id
+                                                                    );
+                                                                    setFilterOpen(
+                                                                        false
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <User className="h-4 w-4 mr-2 text-navy-600" />
+                                                                {teacher.name}
+                                                            </button>
+                                                        )
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                )}
-                            </div>
-                            
-                            {/* Export as PDF Button with dropdown */}
-                            <div className="relative inline-block">
-                                <button
-                                    onClick={() => setShowExportOptions(!showExportOptions)}
-                                    className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-300 transform hover:scale-105 whitespace-nowrap h-[42px] mr-2"
-                                >
-                                    <DownloadCloud className="-ml-1 mr-2 h-5 w-5" />
-                                    Export Classes
-                                    <ChevronDown className="ml-1 h-4 w-4" />
-                                </button>
-                                
-                                {showExportOptions && (
-                                    <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                                        <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                                            <div className="px-4 py-2">
-                                                <button
-                                                    onClick={() => {
-                                                        setExportConfig({ type: 'all', studentId: '' });
-                                                        setShowExportModal(true);
-                                                        setShowExportOptions(false);
-                                                    }}
-                                                    className="block w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                                    role="menuitem"
-                                                >
-                                                    Export All Classes
-                                                </button>
-                                            </div>
-                                            
-                                            <div className="border-t border-gray-100">
-                                                <div className="block px-4 py-2 text-sm text-gray-700 font-medium">
-                                                    Export By Student
-                                                </div>
-                                                <div className="px-4 py-2">
-                                                    <select
-                                                        value={selectedStudent}
-                                                        onChange={(e) => setSelectedStudent(e.target.value)}
-                                                        className="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                    )}
+                                </div>
+
+                                {/* Status Filter Dropdown */}
+                                <div className="relative w-full sm:w-64 z-[90]">
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setFilterOpen(
+                                                filterOpen === "status"
+                                                    ? null
+                                                    : "status"
+                                            )
+                                        }
+                                        onBlur={() =>
+                                            setTimeout(
+                                                () => setFilterOpen(null),
+                                                200
+                                            )
+                                        }
+                                        aria-haspopup="listbox"
+                                        aria-expanded={filterOpen === "status"}
+                                        className={`w-full text-left px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 flex items-center justify-between h-[42px] ${filterOpen === "status"
+                                                ? "bg-orange-50 border border-orange-200 text-navy-700"
+                                                : "bg-white border border-gray-300 text-navy-700 hover:bg-gray-50 shadow-sm"
+                                            }`}
+                                    >
+                                        <div className="flex items-center">
+                                            {filterStatus &&
+                                                filterStatus !== "all" ? (
+                                                <span className="truncate">
+                                                    {getCleanStatusName(filterStatus)}
+                                                </span>
+                                            ) : (
+                                                <span className="text-gray-500">
+                                                    All Statuses
+                                                </span>
+                                            )}
+                                        </div>
+                                        {filterOpen === "status" ? (
+                                            <ChevronUp className="h-4 w-4" />
+                                        ) : (
+                                            <ChevronDown className="h-4 w-4" />
+                                        )}
+                                    </button>
+
+                                    {filterOpen === "status" && (
+                                        <div className="absolute z-[100] mt-1 w-full min-w-[16rem] rounded-lg border border-gray-200 bg-white shadow-lg overflow-visible">
+                                            <div className="max-h-60 overflow-y-auto">
+                                                <div className="p-2 space-y-1">
+                                                    <button
+                                                        key="all-statuses"
+                                                        type="button"
+                                                        className={`w-full rounded-md px-3 py-2 text-left text-sm transition-all duration-200 flex items-center ${!filterStatus ||
+                                                                filterStatus === "all"
+                                                                ? "bg-navy-600 text-white"
+                                                                : "text-gray-700 hover:bg-gray-100"
+                                                            }`}
+                                                        onClick={() => {
+                                                            setFilterStatus("all");
+                                                            setFilterOpen(false);
+                                                        }}
                                                     >
-                                                        <option value="">Select Student</option>
-                                                        {Array.from(new Set(classes.map(cls => cls.student_name)))
-                                                            .filter(name => name)
-                                                            .sort()
-                                                            .map(name => (
-                                                                <option key={name} value={name}>{name}</option>
-                                                            ))
-                                                        }
-                                                    </select>
+                                                        <ListFilter className="h-4 w-4 mr-2" />
+                                                        All Statuses
+                                                    </button>
+                                                    {[
+                                                        "Valid for Cancellation",
+                                                        "FC not consumed",
+                                                        "Completed",
+                                                        "Absent w/ntc counted",
+                                                        "Cancelled",
+                                                        "Absent w/ntc-not counted",
+                                                        "FC consumed",
+                                                    ].map((status) => {
+                                                        const legendColor = getLegendStatusColor(status);
+                                                        return (
+                                                            <button
+                                                                key={status}
+                                                                type="button"
+                                                                className={`w-full rounded-md px-3 py-2 text-left text-sm transition-all duration-200 flex items-center ${filterStatus ===
+                                                                        status
+                                                                        ? "bg-navy-600 text-white"
+                                                                        : "hover:bg-gray-100 text-gray-700"
+                                                                    }`}
+                                                                onClick={() => {
+                                                                    setFilterStatus(
+                                                                        status
+                                                                    );
+                                                                    setFilterOpen(
+                                                                        false
+                                                                    );
+                                                                }}
+                                                            >
+                                                                <span className={`w-4 h-4 ${legendColor.bg} ${legendColor.border} border rounded-sm mr-3 flex-shrink-0`}></span>
+                                                                {status}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Export as PDF Button with dropdown */}
+                                <div className="relative inline-block">
+                                    <button
+                                        onClick={() => setShowExportOptions(!showExportOptions)}
+                                        className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all duration-300 transform hover:scale-105 whitespace-nowrap h-[42px] mr-2"
+                                    >
+                                        <DownloadCloud className="-ml-1 mr-2 h-5 w-5" />
+                                        Export Classes
+                                        <ChevronDown className="ml-1 h-4 w-4" />
+                                    </button>
+
+                                    {showExportOptions && (
+                                        <div className="absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                                            <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
+                                                <div className="px-4 py-2">
                                                     <button
                                                         onClick={() => {
-                                                            if (selectedStudent) {
-                                                                setExportConfig({ type: 'student', studentId: selectedStudent });
-                                                                setShowExportModal(true);
-                                                                setShowExportOptions(false);
-                                                            } else {
-                                                                toast.error("Please select a student");
-                                                            }
+                                                            setExportConfig({ type: 'all', studentId: '' });
+                                                            setShowExportModal(true);
+                                                            setShowExportOptions(false);
                                                         }}
-                                                        className="mt-2 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                        className="block w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                        role="menuitem"
                                                     >
-                                                        Export
+                                                        Export All Classes
                                                     </button>
+                                                </div>
+
+                                                <div className="border-t border-gray-100">
+                                                    <div className="block px-4 py-2 text-sm text-gray-700 font-medium">
+                                                        Export By Student
+                                                    </div>
+                                                    <div className="px-4 py-2">
+                                                        <select
+                                                            value={selectedStudent}
+                                                            onChange={(e) => setSelectedStudent(e.target.value)}
+                                                            className="block w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                                                        >
+                                                            <option value="">Select Student</option>
+                                                            {Array.from(new Set(classes.map(cls => cls.student_name)))
+                                                                .filter(name => name)
+                                                                .sort()
+                                                                .map(name => (
+                                                                    <option key={name} value={name}>{name}</option>
+                                                                ))
+                                                            }
+                                                        </select>
+                                                        <button
+                                                            onClick={() => {
+                                                                if (selectedStudent) {
+                                                                    setExportConfig({ type: 'student', studentId: selectedStudent });
+                                                                    setShowExportModal(true);
+                                                                    setShowExportOptions(false);
+                                                                } else {
+                                                                    toast.error("Please select a student");
+                                                                }
+                                                            }}
+                                                            className="mt-2 w-full inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                        >
+                                                            Export
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                )}
-                            </div>
-                            
-                            {/* Add Class Button */}
-                            <button
-                                onClick={openAddClassModal}
-                                className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-navy-600 to-navy-700 hover:from-navy-700 hover:to-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-500 transition-all duration-300 transform hover:scale-105 whitespace-nowrap h-[42px]"
-                            >
-                                <PlusCircle className="-ml-1 mr-2 h-5 w-5" />
-                                Add Class
-                            </button>
+                                    )}
+                                </div>
+
+                                {/* Add Class Button */}
+                                <button
+                                    onClick={openAddClassModal}
+                                    className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-navy-600 to-navy-700 hover:from-navy-700 hover:to-navy-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navy-500 transition-all duration-300 transform hover:scale-105 whitespace-nowrap h-[42px]"
+                                >
+                                    <PlusCircle className="-ml-1 mr-2 h-5 w-5" />
+                                    Add Class
+                                </button>
                             </div>
                         </div>
-                    
 
-                </div>
 
-                {/* Classes Table */}
-                <div className="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-200 overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
-                            <thead className="bg-gradient-to-r from-navy-900 to-navy-700">
-                                <tr>
+                    </div>
 
-                                    <th
-                                        scope="col"
-                                        className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
-                                    >
-                                        Teacher
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
-                                    >
-                                        Student
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
-                                    >
-                                        Class Type
-                                    </th>
-
-                                    <th
-                                        scope="col"
-                                        className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
-                                    >
-                                        Schedule
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
-                                    >
-                                        Time
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
-                                    >
-                                        Status
-                                    </th>
-                                    <th
-                                        scope="col"
-                                        className="px-4 py-3 text-right text-xs font-medium text-white uppercase tracking-wider"
-                                    >
-                                        Actions
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {filteredClasses.length === 0 ? (
+                    {/* Classes Table */}
+                    <div className="bg-white overflow-hidden shadow-sm rounded-xl border border-gray-200 overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200 rounded-lg overflow-hidden">
+                                <thead className="bg-gradient-to-r from-navy-900 to-navy-700">
                                     <tr>
-                                        <td
-                                            colSpan="8"
-                                            className="px-6 py-12 text-center"
+
+                                        <th
+                                            scope="col"
+                                            className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
                                         >
-                                            <div className="flex flex-col items-center justify-center text-navy-600">
-                                                <BookOpen className="h-12 w-12 mb-2 text-navy-400" />
-                                                <p className="text-lg font-medium text-navy-400">
-                                                    No classes found
-                                                </p>
-                                                <p className="text-sm text-navy-400 mt-1">
-                                                    Try adjusting your search or
-                                                    add a new class.
-                                                </p>
-                                            </div>
-                                        </td>
+                                            Teacher
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
+                                        >
+                                            Student
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider"
+                                        >
+                                            Class Type
+                                        </th>
+
+                                        <th
+                                            scope="col"
+                                            className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
+                                        >
+                                            Schedule
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
+                                        >
+                                            Time
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider"
+                                        >
+                                            Status
+                                        </th>
+                                        <th
+                                            scope="col"
+                                            className="px-4 py-3 text-right text-xs font-medium text-white uppercase tracking-wider"
+                                        >
+                                            Actions
+                                        </th>
                                     </tr>
-                                ) : (
-                                    filteredClasses.map((cls) => (
-                                        <tr
-                                            key={cls.id}
-                                            className="transition-all duration-200 hover:bg-gray-50"
-                                        >
-
-                                            <td className="px-4 py-4 whitespace-nowrap">
-                                                <div className="flex items-center">
-                                                    <div className="flex-shrink-0 h-10 w-10 relative">
-                                                        {teachers[cls.teacher_id]?.image ? (
-                                                            <img 
-                                                                className="h-10 w-10 rounded-full object-cover border-2 border-blue-200" 
-                                                                src={teachers[cls.teacher_id].image} 
-                                                                alt={teachers[cls.teacher_id]?.name || "Teacher"}
-                                                                onError={(e) => {
-                                                                    // Fallback to default icon if image fails to load
-                                                                    e.target.style.display = 'none';
-                                                                    const fallback = e.target.parentNode.querySelector('.fallback-icon');
-                                                                    if (fallback) fallback.style.display = 'flex';
-                                                                }}
-                                                            />
-                                                        ) : null}
-                                                        <div 
-                                                            className={`fallback-icon h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center border-2 border-blue-200 ${teachers[cls.teacher_id]?.image ? 'hidden' : 'flex'}`}
-                                                        >
-                                                            <User className="h-5 w-5 text-blue-600" />
-                                                        </div>
-                                                    </div>
-                                                    <div className="ml-4">
-                                                        <div className="text-sm font-medium text-navy-900">
-                                                            {teachers[
-                                                                cls.teacher_id
-                                                            ]?.name ||
-                                                                "Unknown Teacher"}
-                                                        </div>
-                                                        {teachers[cls.teacher_id]?.email && (
-                                                            <div className="text-xs text-gray-500">
-                                                                {teachers[cls.teacher_id].email}
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-4 whitespace-nowrap">
-                                                <div className="text-sm font-medium text-navy-900">
-                                                    {cls.student_name ? cls.student_name.replace(/^"|"$/g, '') : ''}
-                                                </div>
-                                            </td>
-
-                                            <td className="px-4 py-4 whitespace-nowrap text-center">
-                                                <span className={getClassTypeBadgeClass(cls.class_type)}>
-                                                    {cls.class_type}
-                                                </span>
-                                            </td>
-
-                                            <td className="px-4 py-4 whitespace-nowrap">
-                                                <div className="flex items-center text-sm text-navy-600">
-                                                    <Calendar className="h-4 w-4 mr-1.5 text-navy-400" />
-                                                    {new Date(
-                                                        cls.schedule
-                                                    ).toLocaleDateString()}
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-4 whitespace-nowrap">
-                                                <div className="flex items-center text-sm text-navy-500">
-                                                    <Clock className="h-4 w-4 mr-1.5 text-navy-400" />
-                                                    {formatTimeTo12Hour(cls.time)}
-                                                </div>
-                                            </td>
-                                            <td className="px-4 py-4 whitespace-nowrap">
-                                                <span className={getStatusBadgeClass(cls.status)}>
-                                                    {getCleanStatusName(cls.status)}
-                                                </span>
-                                            </td>
-                                            <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <div className="flex justify-end space-x-2">
-                                                    <button
-                                                        onClick={() =>
-                                                            openEditClassModal(
-                                                                cls
-                                                            )
-                                                        }
-                                                        className="text-navy-600 hover:text-navy-900 transition-colors p-1 rounded-full hover:bg-navy-50"
-                                                        title="Edit class"
-                                                    >
-                                                        <Edit className="h-4 w-4" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() =>
-                                                            handleDelete(cls.id)
-                                                        }
-                                                        className="text-red-600 hover:text-red-900 transition-colors p-1 rounded-full hover:bg-red-50"
-                                                        title="Delete class"
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </button>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {filteredClasses.length === 0 ? (
+                                        <tr>
+                                            <td
+                                                colSpan="8"
+                                                className="px-6 py-12 text-center"
+                                            >
+                                                <div className="flex flex-col items-center justify-center text-navy-600">
+                                                    <BookOpen className="h-12 w-12 mb-2 text-navy-400" />
+                                                    <p className="text-lg font-medium text-navy-400">
+                                                        No classes found
+                                                    </p>
+                                                    <p className="text-sm text-navy-400 mt-1">
+                                                        Try adjusting your search or
+                                                        add a new class.
+                                                    </p>
                                                 </div>
                                             </td>
                                         </tr>
-                                    ))
-                                )}
-                            </tbody>
-                        </table>
+                                    ) : (
+                                        filteredClasses.map((cls) => (
+                                            <tr
+                                                key={cls.id}
+                                                className="transition-all duration-200 hover:bg-gray-50"
+                                            >
+
+                                                <td className="px-4 py-4 whitespace-nowrap">
+                                                    <div className="flex items-center">
+                                                        <div className="flex-shrink-0 h-10 w-10 relative">
+                                                            {teachers[cls.teacher_id]?.image ? (
+                                                                <img
+                                                                    className="h-10 w-10 rounded-full object-cover border-2 border-blue-200"
+                                                                    src={teachers[cls.teacher_id].image}
+                                                                    alt={teachers[cls.teacher_id]?.name || "Teacher"}
+                                                                    onError={(e) => {
+                                                                        // Fallback to default icon if image fails to load
+                                                                        e.target.style.display = 'none';
+                                                                        const fallback = e.target.parentNode.querySelector('.fallback-icon');
+                                                                        if (fallback) fallback.style.display = 'flex';
+                                                                    }}
+                                                                />
+                                                            ) : null}
+                                                            <div
+                                                                className={`fallback-icon h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center border-2 border-blue-200 ${teachers[cls.teacher_id]?.image ? 'hidden' : 'flex'}`}
+                                                            >
+                                                                <User className="h-5 w-5 text-blue-600" />
+                                                            </div>
+                                                        </div>
+                                                        <div className="ml-4">
+                                                            <div className="text-sm font-medium text-navy-900">
+                                                                {teachers[
+                                                                    cls.teacher_id
+                                                                ]?.name ||
+                                                                    "Unknown Teacher"}
+                                                            </div>
+                                                            {teachers[cls.teacher_id]?.email && (
+                                                                <div className="text-xs text-gray-500">
+                                                                    {teachers[cls.teacher_id].email}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 py-4 whitespace-nowrap">
+                                                    <div className="text-sm font-medium text-navy-900">
+                                                        {cls.student_name ? cls.student_name.replace(/^"|"$/g, '') : ''}
+                                                    </div>
+                                                </td>
+
+                                                <td className="px-4 py-4 whitespace-nowrap text-center">
+                                                    <span className={getClassTypeBadgeClass(cls.class_type)}>
+                                                        {cls.class_type}
+                                                    </span>
+                                                </td>
+
+                                                <td className="px-4 py-4 whitespace-nowrap">
+                                                    <div className="flex items-center text-sm text-navy-600">
+                                                        <Calendar className="h-4 w-4 mr-1.5 text-navy-400" />
+                                                        {new Date(
+                                                            cls.schedule
+                                                        ).toLocaleDateString()}
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 py-4 whitespace-nowrap">
+                                                    <div className="flex items-center text-sm text-navy-500">
+                                                        <Clock className="h-4 w-4 mr-1.5 text-navy-400" />
+                                                        {formatTimeTo12Hour(cls.time)}
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 py-4 whitespace-nowrap">
+                                                    <span className={getStatusBadgeClass(cls.status)}>
+                                                        {getCleanStatusName(cls.status)}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                                    <div className="flex justify-end space-x-2">
+                                                        <button
+                                                            onClick={() =>
+                                                                openEditClassModal(
+                                                                    cls
+                                                                )
+                                                            }
+                                                            className="text-navy-600 hover:text-navy-900 transition-colors p-1 rounded-full hover:bg-navy-50"
+                                                            title="Edit class"
+                                                        >
+                                                            <Edit className="h-4 w-4" />
+                                                        </button>
+                                                        <button
+                                                            onClick={() =>
+                                                                handleDelete(cls.id)
+                                                            }
+                                                            className="text-red-600 hover:text-red-900 transition-colors p-1 rounded-full hover:bg-red-50"
+                                                            title="Delete class"
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
                 </div>
 
                 {/* Add Class Modal */}
-            <AddClassesModal
-                isOpen={showAddModal}
-                onClose={() => {
-                    setShowAddModal(false);
-                    setEditingClass(null);
-                    setFormData({
-                        teacher_id: "",
-                        teacherName: "",
-                        student_name: "",
-                        class_type: "Regular",
-                        schedule: "",
-                        time: "",
-                        status: "FC not consumed (RG)",
-                    });
-                }}
-                onSubmit={handleSubmitForm}
-                formData={formData}
-                onInputChange={handleInputChange}
-                isEditing={editingClass ? true : false}
-            />
+                <AddClassesModal
+                    isOpen={showAddModal}
+                    onClose={() => {
+                        setShowAddModal(false);
+                        setEditingClass(null);
+                        setFormData({
+                            teacher_id: "",
+                            teacherName: "",
+                            student_name: "",
+                            class_type: "Regular",
+                            schedule: "",
+                            time: "",
+                            status: "FC not consumed (RG)",
+                        });
+                    }}
+                    onSubmit={handleSubmitForm}
+                    formData={formData}
+                    onInputChange={handleInputChange}
+                    isEditing={editingClass ? true : false}
+                />
 
-            {/* Edit Class Modal */}
-            <UpdateClassesModal
-                isOpen={showEditModal}
-                onClose={() => {
-                    setShowEditModal(false);
-                    setEditingClass(null);
-                    setFormData({
-                        teacher_id: "",
-                        teacherName: "",
-                        student_name: "",
-                        class_type: "Regular",
-                        schedule: "",
-                        time: "",
-                        status: "FC not consumed (RG)",
-                    });
-                }}
-                onSubmit={handleSubmitForm}
-                classForm={formData}
-                onInputChange={handleInputChange}
-                isUpdating={false}
-            />
+                {/* Edit Class Modal */}
+                <UpdateClassesModal
+                    isOpen={showEditModal}
+                    onClose={() => {
+                        setShowEditModal(false);
+                        setEditingClass(null);
+                        setFormData({
+                            teacher_id: "",
+                            teacherName: "",
+                            student_name: "",
+                            class_type: "Regular",
+                            schedule: "",
+                            time: "",
+                            status: "FC not consumed (RG)",
+                        });
+                    }}
+                    onSubmit={handleSubmitForm}
+                    classForm={formData}
+                    onInputChange={handleInputChange}
+                    isUpdating={false}
+                />
 
                 <ToastContainer />
-                
+
                 {/* Export Confirmation Modal */}
                 {showExportModal && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
@@ -1262,7 +1246,7 @@ export default function AdminClasses() {
                                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                                     {processingExport ? "Generating PDF..." : "Confirm Export"}
                                 </h3>
-                                
+
                                 {processingExport ? (
                                     <div className="flex flex-col items-center py-4">
                                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
@@ -1273,12 +1257,12 @@ export default function AdminClasses() {
                                 ) : (
                                     <>
                                         <p className="text-sm text-gray-500 mb-4 text-center">
-                                            {exportConfig.type === 'student' 
+                                            {exportConfig.type === 'student'
                                                 ? `Are you sure you want to export classes for ${exportConfig.studentId}?`
                                                 : 'Are you sure you want to export all classes?'
                                             }
                                         </p>
-                                        
+
                                         <div className="flex justify-end w-full space-x-3">
                                             <button
                                                 onClick={() => setShowExportModal(false)}
